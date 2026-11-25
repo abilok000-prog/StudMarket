@@ -1,0 +1,19 @@
+{
+  "appId": "kz.studmarket.app",
+  "appName": "Stud Market",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    },
+    "CapacitorCookies": {
+      "enabled": true
+    },
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}

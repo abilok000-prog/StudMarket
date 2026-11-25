@@ -29,12 +29,12 @@ async function rest(path, { method = 'GET', body, prefer } = {}) {
 }
 
 export const db = {
-  getProfile: async () => (await rest('profiles?select=*'))[0] || null,
+  // Always filter by the signed-in user: admins can read every profile, so an unfiltered query would return someone else's.
+  getProfile: async () => (await rest(`profiles?select=*&user_id=eq.${encodeURIComponent(await myUserId())}`))[0] || null,
   saveProfile: (p) => rest('profiles?on_conflict=user_id', {
     method: 'POST', body: { ...p, updated_at: new Date().toISOString() },
     prefer: 'resolution=merge-duplicates,return=representation',
   }).then((r) => r[0]),
-  listOrders: () => rest('orders?select=*&order=created_at.desc'),
   addOrder: (o) => rest('orders', { method: 'POST', body: o, prefer: 'return=representation' }).then((r) => r[0]),
   setOrderStatus: (id, status) => rest(`orders?id=eq.${encodeURIComponent(id)}`, { method: 'PATCH', body: { status } }),
   listLost: () => rest('lost_posts?select=*&order=created_at.desc'),
@@ -77,7 +77,7 @@ Object.assign(db, {
   listMessages: (orderId) => rest(`messages?select=*&order_id=eq.${encodeURIComponent(orderId)}&order=created_at.asc`),
   listRecentMessages: () => rest('messages?select=id,order_id,body,sender_id,sender_name,is_staff,created_at&order=created_at.desc&limit=500'),
   listClients: () => rest('profiles?select=user_id,full_name,university,faculty,course,phone,student_id,avatar_url,avatar_color,avatar_emoji,created_at&order=created_at.desc'),
-  myAdminRequest: () => rest('admin_requests?select=*&order=created_at.desc&limit=1').then((r) => r[0] || null),
+  myAdminRequest: async () => (await rest(`admin_requests?select=*&user_id=eq.${encodeURIComponent(await myUserId())}&order=created_at.desc&limit=1`))[0] || null,
   requestAdmin: (reason) => rpc('request_admin', { p_reason: reason }),
   listAdminRequests: () => rest('admin_requests?select=*&status=eq.pending&order=created_at.asc'),
   reviewAdminRequest: (id, ok) => rpc('review_admin_request', { p_id: id, p_approve: ok }),

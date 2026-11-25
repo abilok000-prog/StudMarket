@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "app:sync": "vite build && cap sync",
     "app:android": "vite build && cap sync android && cap open android",
-    "app:ios": "vite build && cap sync ios && cap open ios"
+    "app:ios": "vite build && cap sync ios && cap open ios",
+    "app:icons": "node scripts/make-icons.mjs && capacitor-assets generate --ios --android --iconBackgroundColor #5b5bf0 --splashBackgroundColor #5b5bf0 --splashBackgroundColorDark #0d0e14"
   },
   "dependencies": {
     "@capacitor/android": "6.1.2",
@@ -24,6 +25,7 @@
     "react-dom": "18.3.1"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "6.1.2",
     "@vitejs/plugin-react": "4.3.4",
     "vite": "5.4.11"
